@@ -10,10 +10,12 @@ namespace JETech.NetCoreWeb.Helper
         public ActionPaginationResult<IQueryable<t>> GetPaginationResult<t>(ActionQueryArgs<t> queryArgs,IQueryable<t> data)
         {
             IQueryable<t> newData;
+            int totalCount = 0;
+
             if (queryArgs.PageArgs != null)
             {
                 int skip = 0;
-                int take = 0;
+                int take = 0;                
 
                 if (queryArgs.PageArgs.Skip.HasValue)
                 {
@@ -21,14 +23,16 @@ namespace JETech.NetCoreWeb.Helper
                 }
                 if (queryArgs.PageArgs.Size.HasValue && queryArgs.PageArgs.Num.HasValue)
                 {
-                    take = (int)(queryArgs.PageArgs.Size * queryArgs.PageArgs.Num);
+                    totalCount = data.Count();
+                    take = (int)queryArgs.PageArgs.Size;
+                    skip = (int)(queryArgs.PageArgs.Size * queryArgs.PageArgs.Num);
                 }
                 newData = data.Skip(skip).Take(take);
             }else
             {
                 newData = data;
             }
-            return new ActionPaginationResult<IQueryable<t>> { Data = newData };
+            return new ActionPaginationResult<IQueryable<t>> { Data = newData, TotalCount = totalCount };
         } 
     }
 }
