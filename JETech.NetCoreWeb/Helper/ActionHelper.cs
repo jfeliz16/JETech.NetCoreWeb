@@ -15,17 +15,22 @@ namespace JETech.NetCoreWeb.Helper
             if (queryArgs.PageArgs != null)
             {
                 int skip = 0;
-                int take = 0;                
+                int take = 0;
+
+                totalCount = data.Count();
+
+                if (queryArgs.PageArgs.Size.HasValue)
+                {
+                    take = (int)queryArgs.PageArgs.Size;
+                }
 
                 if (queryArgs.PageArgs.Skip.HasValue)
                 {
-                    skip = (int)queryArgs.PageArgs.Skip;
+                    skip = (int)queryArgs.PageArgs.Skip;                    
                 }
-                if (queryArgs.PageArgs.Size.HasValue && queryArgs.PageArgs.Num.HasValue)
-                {
-                    totalCount = data.Count();
-                    take = (int)queryArgs.PageArgs.Size;
-                    skip = (int)(queryArgs.PageArgs.Size * queryArgs.PageArgs.Num);
+                else if (queryArgs.PageArgs.Num.HasValue)
+                {                       
+                    skip = (int)(take * queryArgs.PageArgs.Num);
                 }
                 newData = data.Skip(skip).Take(take);
             }else
