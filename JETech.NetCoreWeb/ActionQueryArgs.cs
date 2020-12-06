@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace JETech.NetCoreWeb
@@ -8,6 +9,8 @@ namespace JETech.NetCoreWeb
     {
         public PageArgs PageArgs { get; set; }
         public t Model { get; set; }
+        public Expression<Func<t, bool>> Condiction { get; set; }
+        public string CondictionString { get; set; }
     }
 
     public class PageArgs 
