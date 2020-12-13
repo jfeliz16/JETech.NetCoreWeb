@@ -8,7 +8,12 @@ namespace JETech.NetCoreWeb.Helper
 {
     public class ConverterExpression
     {
-        public static Expression<Func<T, bool>> GetContainsExpression<T>(string propertyName, string propertyValue)
+        public static Expression<Func<T, bool>> GetContainsExpression<T>(string propertyName, string propertyValue) 
+        {
+            return GetContainsExpression<T>(propertyName, propertyValue, false);
+        }
+
+        public static Expression<Func<T, bool>> GetContainsExpression<T>(string propertyName, string propertyValue,bool validateNull)
         {
             var parameterExp = Expression.Parameter(typeof(T), "type");
             var propertyExp = Expression.Property(parameterExp, propertyName);
@@ -16,7 +21,17 @@ namespace JETech.NetCoreWeb.Helper
             var someValue = Expression.Constant(propertyValue, typeof(string));
             var containsMethodExp = Expression.Call(propertyExp, method, someValue);
 
-            return Expression.Lambda<Func<T, bool>>(containsMethodExp, parameterExp);
+            var condition = Expression.Lambda<Func<T, bool>>(containsMethodExp, parameterExp);
+
+            if (validateNull)
+            {
+                var nullCheck2 = Expression.NotEqual(propertyExp, Expression.Constant(null, typeof(string)));
+
+                condition = Expression.Lambda<Func<T, bool>>(
+                               Expression.AndAlso(nullCheck2, condition.Body ), condition.Parameters[0]);
+            }
+            
+            return condition;
         }
 
         public static Expression<Func<T, bool>> GetStartsWithExpression<T>(string propertyName, string propertyValue)
@@ -26,8 +41,10 @@ namespace JETech.NetCoreWeb.Helper
             MethodInfo method = typeof(string).GetMethod("StartsWith", new[] { typeof(string) });
             var someValue = Expression.Constant(propertyValue, typeof(string));
             var containsMethodExp = Expression.Call(propertyExp, method, someValue);
+        
+            var condition = Expression.Lambda<Func<T, bool>>(containsMethodExp, parameterExp);
 
-            return Expression.Lambda<Func<T, bool>>(containsMethodExp, parameterExp);
+            return condition;
         }
     }
 }

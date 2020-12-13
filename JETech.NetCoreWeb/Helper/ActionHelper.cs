@@ -9,35 +9,46 @@ namespace JETech.NetCoreWeb.Helper
     {
         public ActionPaginationResult<IQueryable<t>> GetPaginationResult<t>(ActionQueryArgs<t> queryArgs,IQueryable<t> data)
         {
-            IQueryable<t> newData;
+            IQueryable<t> newData = null;
             int totalCount = 0;
 
-            if (queryArgs.PageArgs != null)
+            try
             {
-                int skip = 0;
-                int take = 0;
-
-                totalCount = data.Count();
-
-                if (queryArgs.PageArgs.Size.HasValue)
+                if (queryArgs.PageArgs != null)
                 {
-                    take = (int)queryArgs.PageArgs.Size;
-                }
+                    int skip = 0;
+                    int take = 0;
 
-                if (queryArgs.PageArgs.Skip.HasValue)
+                    if (data != null)
+                    {
+                        totalCount = data.Count();
+
+                        if (queryArgs.PageArgs.Size.HasValue)
+                        {
+                            take = (int)queryArgs.PageArgs.Size;
+                        }
+
+                        if (queryArgs.PageArgs.Skip.HasValue)
+                        {
+                            skip = (int)queryArgs.PageArgs.Skip;
+                        }
+                        else if (queryArgs.PageArgs.Num.HasValue)
+                        {
+                            skip = (int)(take * queryArgs.PageArgs.Num);
+                        }
+                        newData = data.Skip(skip).Take(take);
+                    }
+                }
+                else
                 {
-                    skip = (int)queryArgs.PageArgs.Skip;                    
+                    newData = data;
                 }
-                else if (queryArgs.PageArgs.Num.HasValue)
-                {                       
-                    skip = (int)(take * queryArgs.PageArgs.Num);
-                }
-                newData = data.Skip(skip).Take(take);
-            }else
-            {
-                newData = data;
+                return new ActionPaginationResult<IQueryable<t>> { Data = newData, TotalCount = totalCount };
             }
-            return new ActionPaginationResult<IQueryable<t>> { Data = newData, TotalCount = totalCount };
+            catch (Exception ex)
+            {
+                throw;
+            }
         } 
     }
 }
