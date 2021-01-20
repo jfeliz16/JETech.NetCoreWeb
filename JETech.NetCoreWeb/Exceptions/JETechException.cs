@@ -36,7 +36,7 @@ namespace JETech.NetCoreWeb.Exceptions
 
         public static JETechException Parse(Exception ex) 
         {
-            if (ex.GetType() == typeof(JETechException)) 
+            if (ex is JETechException) 
             {
                 return (JETechException)ex;
             }
