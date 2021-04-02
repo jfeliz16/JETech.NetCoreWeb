@@ -7,6 +7,6 @@ namespace JETech.NetCoreWeb.Types
 {
     public class ActionArgs<t>
     {        
-        public t Model { get; set; }
+        public t Data { get; set; }
     }
 }

@@ -8,5 +8,6 @@ namespace JETech.NetCoreWeb.Types
     public class ActionResult<t>
     {
         public t Data { get; set; }
+        public string ErrorMessage { get; set; }
     }
 }
